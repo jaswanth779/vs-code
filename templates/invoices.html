@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #efe2d1;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .menu {
+            font-size: 17px;
+            padding: 0;
+        }
+        .menu li {
+            list-style: none;
+            padding: 10px;
+            color: black;
+            border-bottom: 2px solid #004d00;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+        .menu li:last-child {
+            border-bottom: none;
+        }
+        .menu li:hover {
+            background-color: #c1e1c1;
+            color: #110101;
+            border-radius: 10px;
+            transform: scale(1.05);
+        }
+        .menu a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+            display: block;
+        }
+        .menu li a i {
+            margin-right: 5px;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            width: calc(100% - 220px);
+        }
+        .table-container {
+            margin-top: 20px;
+            overflow-y: auto;
+            max-height: 550px;
+        }
+        .table-bordered th, .table-bordered td {
+            border: 2px solid black !important;
+        }
+        tfoot td.total-cell {
+            font-weight: bold;
+        }
+        .table td, .table th {
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+        .table th {
+            font-weight: bold;
+            background-color: #f2f2f2;
+            font-size: 15px;
+        }
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+        .filter-container {
+            border: 2px solid #004d00;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .filter-select {
+            width: 100%;
+            max-width: 300px;
+        }
+        .filter-select select {
+            border: 2px solid #0d0e0d;
+            border-radius: 8px;
+            padding: 5px;
+            font-weight: bold;
+            background-color: #f5f5f5;
+            transition: border-color 0.3s;
+        }
+        .filter-select select:focus {
+            border-color: #9e9b9b;
+        }
+        .filter-select label {
+            font-weight: bold;
+            color: #333;
+        }
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: left;
+        }
+        .button-container button {
+            font-weight: bold;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .tech-support {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .mobile-icon {
+            font-size: 30px;
+        }
+        .heading {
+            border: 3px solid black;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: rgb(240, 239, 236);
+        }
+        .table tbody tr:hover {
+            background-color: #c1e1c1;
+        }
+        .table tbody tr {
+            background-color: transparent;
+        }
+        .table {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="https://asakta-smis.com/assets/images/SMIS.svg" alt="Company Logo">
+        </div>
+        <ul class="menu">
+            <li><a href="/" class="{{ 'active' if active_page == 'home' else '' }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/invoices" class="{{ 'active' if active_page == 'invoices' else '' }}"><i class="fas fa-file-invoice"></i> Invoice Details</a></li>
+            <li><a href="/invoice_pdfs" class="{{ 'active' if active_page == 'invoice_pdfs' else '' }}"><i class="fas fa-file-pdf"></i> Invoice PDFs</a></li>
+            <li><a href="#pos" class="{{ 'active' if active_page == 'pos' else '' }}"><i class="fas fa-file-alt"></i> POs</a></li>
+        </ul>
+        <div class="tech-support">
+            <span class="mobile-icon">📞</span>
+            <span class="tech-support-label"><strong>Tech Number:</strong></span>
+            <strong class="tech-support-number">9014598632</strong>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1 class="heading">ASSEMBLY INVOICES</h1>
+
+        <!-- Filters and Buttons Container -->
+        <div class="filter-container">
+            <!-- Filter Row -->
+            <div class="filter-row">
+                <div class="form-group filter-select">
+                    <label for="discom-select"><strong>DISCOM:</strong></label>
+                    <select id="discom-select" class="form-control">
+                        <option value="">All</option>
+                        {% for discom in discoms %}
+                        <option value="{{ discom }}">{{ discom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group filter-select">
+                    <label for="assembler-select"><strong>ASSEMBLER:</strong></label>
+                    <select id="assembler-select" class="form-control">
+                        <option value="">All</option>
+                        {% for assembler in assemblers %}
+                        <option value="{{ assembler }}">{{ assembler }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group filter-select">
+                    <label for="status-select"><strong>PAYMENT STATUS:</strong></label>
+                    <select id="status-select" class="form-control">
+                        <option value="">All</option>
+                        <option value="PAID">PAID</option>
+                        <option value="IN PROCESS">IN PROCESS</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Button Row -->
+            <div class="button-container">
+                <button id="filter-btn" class="btn btn-primary mb-3">
+                    <i class="fas fa-search"></i> <strong>SEARCH</strong>
+                </button>
+                <button id="download-btn" class="btn btn-success mb-3">
+                    <i class="fas fa-download"></i> <strong>DOWNLOAD CSV</strong>
+                </button>
+            </div>
+        </div>
+        
+
+        <div class="table-container">
+            <h3>INVOICES</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="filtered-data">
+                    <!-- Data rows will be injected here by JavaScript -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        {% for column in columns %}
+                            {% if column in ['S.No', 'Discom', 'Assembler'] %}
+                                <td></td>
+                            {% elif column in ['Vendor Code', 'Date', 'Invoice No'] %}
+                                <td></td>
+                            {% else %}
+                                <td id="total-{{ column | lower | replace(' ', '-') }}" class="total-cell"></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById('filter-btn').addEventListener('click', async function() {
+            const discom = document.getElementById('discom-select').value;
+            const assembler = document.getElementById('assembler-select').value;
+            const status = document.getElementById('status-select').value; // New status selection
+
+            const response = await fetch('/filter_data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ discom, assembler, status }) // Include status in the request
+            });
+            const data = await response.json();
+            const tableBody = document.getElementById('filtered-data');
+            tableBody.innerHTML = ''; // Clear previous data
+
+            let totals = {
+                'Basic': 0,
+                'GST': 0,
+                'Gross Amount': 0,
+                'TDS': 0,
+                'Advance': 0,
+                'Other Recovery if any': 0,
+                'Total Deductions': 0,
+                'Net Payable': 0
+            };
+
+            let serialNumber = 1; // Initialize the serial number counter
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+
+                // Add S.No column dynamically
+                tr.innerHTML += `<td>${serialNumber++}</td>`; // Increment serial number for each row
+
+                {% for column in columns %}
+                    tr.innerHTML += `<td>${row['{{ column }}'] !== undefined ? row['{{ column }}'] : ''}</td>`;
+                {% endfor %}
+
+                tableBody.appendChild(tr);
+
+                totals['Basic'] += parseFloat(row['Basic']) || 0;
+                totals['GST'] += parseFloat(row['GST']) || 0;
+                totals['Gross Amount'] += parseFloat(row['Gross Amount']) || 0;
+                totals['TDS'] += parseFloat(row['TDS']) || 0;
+                totals['Advance'] += parseFloat(row['Advance']) || 0;
+                totals['Other Recovery if any'] += parseFloat(row['Other Recovery if any']) || 0;
+                totals['Total Deductions'] += parseFloat(row['Total Deductions']) || 0;
+                totals['Net Payable'] += parseFloat(row['Net Payable']) || 0;
+            });
+
+            // Update totals in the footer
+            for (const [key, value] of Object.entries(totals)) {
+                const element = document.getElementById(`total-${key.toLowerCase().replace(/ /g, '-')}`);
+                if (element) {
+                    element.innerText = value > 0 ? value.toFixed(2) : '';
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

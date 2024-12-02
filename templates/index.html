@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSEMBLY INVOICES DETAILS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Background and overlay styling */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            background-image: url("../static/warehouse.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            width: 200px;
+        }
+        .logo {
+            margin-bottom: 20px; /* Increase this value to add more space */
+        }
+        .menu {
+            font-size: 16px;
+            padding: 0; /* Reset padding for list */
+        }
+        .menu li {
+        list-style: none;
+        padding: 10px;
+        color: black;
+        border-bottom: 2px solid #004d00;
+        transition: background-color 0.3s, color 0.3s;
+        cursor: pointer; /* Changes cursor to a pointer */
+        }
+        .menu li:last-child {
+            border-bottom: none; /* Removes border from last item */
+        }
+        .menu li:hover {
+        background-color: #c1e1c1; /* Light green background on hover */
+        color: #110101;
+        border-radius: 10px;
+        color: #110101;
+        transform: scale(1.05); /* Slight scaling effect */
+        }
+        .menu a {
+            text-decoration: none;
+            color: inherit; /* Inherits color from li */
+            font-weight: bold;
+            display: block; /* Fills the entire li area */
+        }
+        .menu li a i {
+            margin-right: 5px; /* Adds space between the icon and the text */
+        }
+        
+        .centered-heading {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+        /* Tech Support Context Menu styling */
+        .context-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            color: #FFD700;
+            z-index: 2;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .context-menu .mobile-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        .context-menu .tech-support-number {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="https://asakta-smis.com/assets/images/SMIS.svg" alt="Company Logo">
+        </div>
+        <ul class="menu">
+            <li><a href="/invoices" class="{{ 'active' if active_page == 'invoices' else '' }}"><i class="fas fa-file-invoice"></i> Invoice Details</a></li>
+            <li><a href="/invoice_pdfs" class="{{ 'active' if active_page == 'invoice_pdfs' else '' }}"><i class="fas fa-file-pdf"></i> Invoice PDFs</a></li>
+            <li><a href="#pos" class="{{ 'active' if active_page == 'pos' else '' }}"><i class="fas fa-file-alt"></i> POs</a></li>
+        </ul>
+    </div>
+
+    <!-- Tech Support Context Menu at the top beside the sidebar -->
+    <div class="context-menu">
+        <span class="mobile-icon">📞</span>
+        <span class="tech-support-label">Tech Support Number:</span>
+        <strong class="tech-support-number">+91 9014598632</strong>
+    </div>
+
+    <!-- Centered Heading -->
+    <h4 class="centered-heading">WELCOME TO WAREHOUSE</h4>
+</body>
+</html>

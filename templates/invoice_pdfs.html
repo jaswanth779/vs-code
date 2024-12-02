@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice PDFs</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #efe2d1;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        .logo {
+            margin-bottom: 20px; /* Ensure spacing below logo */
+        }
+        .menu {
+            font-size: 17px;
+            padding: 0;
+            margin-top: 20px; /* Added margin-top to push the menu options to the top */
+        }
+        .menu li {
+            list-style: none;
+            padding: 10px;
+            color: black;
+            border-bottom: 2px solid #004d00;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+        .menu li:last-child {
+            border-bottom: none;
+        }
+        .menu li:hover {
+            background-color: #c1e1c1;
+            color: #110101;
+            border-radius: 10px;
+            transform: scale(1.05);
+        }
+        .menu a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: bold;
+            display: block;
+        }
+        .menu li a i {
+            margin-right: 5px;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            width: calc(100% - 220px);
+        }
+        .assembler-container, .invoices-container {
+            padding: 25px;
+            border: 3px solid #0d0e0d;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .assembler-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .assembler-button {
+            position: relative;
+            padding: 10px 10px 10px 30px;
+            background-color: #c1e1c1;
+            color: #110101;
+            border: 2px solid #0d0e0d;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+            
+        }
+        .assembler-button:hover {
+            transform: scale(1.05);
+        }
+        .assembler-button.selected {
+            background-color: #4ce4f1;
+        }
+        .assembler-button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            height: 12px;
+            width: 12px;
+            background-color: #0d0e0d;
+            border-radius: 50%;
+        }
+        .invoices-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        .invoice-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f5f5;
+            padding: 20px;
+            border: 3px solid #0d0e0d;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .invoice-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(31, 235, 20, 0.2);
+        }
+        .invoice-link {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .title-border {
+            border: 3px solid black;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: rgb(240, 239, 236);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="https://asakta-smis.com/assets/images/SMIS.svg" alt="Company Logo">
+        </div>
+        <ul class="menu">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/invoices"><i class="fas fa-file-invoice"></i> Invoice Details</a></li>
+            <li><a href="/invoice_pdfs"><i class="fas fa-file-pdf"></i> Invoice PDFs</a></li>
+            <li><a href="#pos" class="{{ 'active' if active_page == 'pos' else '' }}"><i class="fas fa-file-alt"></i> POs</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="title-border">INVOICES</div>
+        <div class="container">
+            <div class="assembler-container">
+                <h5>Select Assembler:</h5>
+                <div class="assembler-grid" id="assemblerGrid">
+                    {% for assembler in assemblers %}
+                        <div class="assembler-button" data-assembler="{{ assembler }}">
+                            {{ assembler }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="invoices-container">
+                <h5>Invoice PDFs: <span id="selectedAssembler"></span></h5>
+                <div class="invoices-grid" id="invoicesGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.assembler-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.assembler-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                this.classList.add('selected');
+
+                const assembler = this.getAttribute('data-assembler');
+                document.getElementById('selectedAssembler').textContent = assembler;
+
+                fetch('/filter_invoices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assembler: assembler })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const invoicesGrid = document.getElementById('invoicesGrid');
+                    invoicesGrid.innerHTML = '';
+
+                    if (data.error) {
+                        invoicesGrid.innerHTML = `<p>${data.error}</p>`;
+                        return;
+                    }
+
+                    data.forEach(invoice => {
+                        const invoiceItem = document.createElement('div');
+                        invoiceItem.classList.add('invoice-item');
+                        invoiceItem.innerHTML = `
+                            <a href="/download_invoice/${invoice}" class="invoice-link" target="_blank">
+                                ${invoice}
+                            </a>
+                        `;
+                        invoicesGrid.appendChild(invoiceItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching invoices:', error));
+            });
+        });
+    </script>
+</body>
+</html>
